@@ -356,7 +356,20 @@ a:visited {
   height: 20px;
   margin: 27px 10px 0 0;
 }
+.key-val {
+  float: right;
+  padding: 0;
+  margin: 26px 0 0;
+  font-size: 20px;
+  line-height: 20px;
+  height: 20px;
+}
 
+.textBox {
+  float: right;
+  width: 160px;
+  margin: 27px 0 0;
+}
 .volume-down,
 .volume-up,
 .temp-up,
@@ -640,7 +653,6 @@ a:visited {
 .lights-off .app-state .app-loading-loader {
   color: #fff;
 }
-
 .home-tv {
   float: left;
   position: relative;
