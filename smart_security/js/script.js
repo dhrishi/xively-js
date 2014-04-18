@@ -27,46 +27,39 @@
         value,
         // function for setting up the toggle inputs
         handleToggle = function ( id_name, datastreamID, value ) {
-          var $toggle = $(".js-"+ id_name +"-toggle");
-
-          if ( value ) {
-            // lights are on
-            ui.toggle.on( $toggle, true );
-          }
-          else {
-            // lights are off
-            ui.toggle.off( $toggle, true );
-          }
-
+		console.log('in handle toggle');
           // save changes
           $(".js-"+ id_name).on("change", function(){
             $(".app-state").addClass("loading").fadeIn(200);
 
             if ( this.checked ) {
+		console.log('In if');
               xively.datastream.update(feedID, "target_state", { "current_value": 1 }, function(){
+		console.log('In if1');
                 $(".app-state").removeClass("loading").fadeOut(200);
               });
             }
             else {
+		console.log('In else');
               xively.datastream.update(feedID, "target_state", { "current_value": 0 }, function(){
+		console.log('In else1');
                 $(".app-state").removeClass("loading").fadeOut(200);
               });
             }
           });
 
           // make it live
-          xively.datastream.subscribe(feedID, "current_state", function ( event, data ) {
-            ui.fakeLoad();
+          console.log('making it live');
+           xively.datastream.update(feedID, "target_pin", { "current_value": value }, function(){
+		console.log('In my code');
+              });
 
-            if ( parseInt(data["current_value"]) ) {
-              // lights are on
-              ui.toggle.on( $toggle, true );
-            }
-            else {
-              // lights are off
-              ui.toggle.off( $toggle, true );
-            }
-          });
+          xively.datastream.subscribe(feedID, "target_pin", function ( event, data ) {
+	   console.log('in subscribe for target_pin');
+	   console.log('current value is: ' + parseInt(data["current_value"]));
+	   pin.value = parseInt(data["current_value"]);
+           ui.fakeLoad();
+            });
         };
 
     // loop through datastreams
@@ -77,7 +70,12 @@
       // LED
 
       if ( datastream.id === "target_state" ) {
-        handleToggle( "lights", "target_state", value );
+        //handleToggle( "lights", "target_state", value );
+      }
+
+      if (datastream.id === "target_pin") {
+	pin.value = value;
+        handleToggle( "pin", "target_pin", value );
       }
     }
     // SHOW UI
@@ -87,5 +85,16 @@
     });
   });
 
+  button1.onclick=function(){
+	console.log('button pressed')
+	console.log('value of the text box is: ' + pin.value);
+	if (isNaN(pin.value) || pin.value === "") {
+		alert('Security Pin should contain only numbers');
+	} else {
+		xively.datastream.update(feedID, "target_pin", { "current_value": pin.value }, function(){
+			console.log('Finally the code is posted');
+	        });
+	}
+  };
 
 })( jQuery );
